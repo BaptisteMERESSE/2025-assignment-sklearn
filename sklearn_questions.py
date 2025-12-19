@@ -77,8 +77,9 @@ class KNearestNeighbors(BaseEstimator, ClassifierMixin):
         self : instance of KNearestNeighbors
             The current instance of the classifier
         """
-        X, y = validate_data(X, y, ensure_2d=True, dtype=np.float64,
-                             y_numeric=False)
+        X, y = validate_data(
+            X, y, ensure_2d=True, dtype=np.float64, y_numeric=False
+        )
         self.X_ = X
         self.y_ = y
         return self
@@ -166,7 +167,7 @@ class MonthlySplit(BaseCrossValidator):
             times = pd.Series(X.index)
         else:
             times = pd.to_datetime(X[self.time_col])
-        months = times.dt.to_period('M').unique()
+        months = times.dt.to_period('M').drop_duplicates()
         return max(len(months) - 1, 0)
 
     def split(self, X, y=None, groups=None):
@@ -193,11 +194,9 @@ class MonthlySplit(BaseCrossValidator):
             times = pd.Series(X.index)
         else:
             times = pd.to_datetime(X[self.time_col])
-        months = times.dt.to_period('M').sort_values().unique()
+        months = times.dt.to_period('M').drop_duplicates().sort_values().to_list()
         for i in range(len(months) - 1):
-            # mask for current training month
             train_mask = times.dt.to_period('M') == months[i]
-            # mask for next month as test
             test_mask = times.dt.to_period('M') == months[i + 1]
             train_idx = np.where(train_mask)[0]
             test_idx = np.where(test_mask)[0]
