@@ -28,8 +28,8 @@ datatime format. Then the aim is to split the data between train and test
 sets when for each pair of successive months, we learn on the first and
 predict of the following. For example if you have data distributed from
 november 2020 to march 2021, you have have 4 splits. The first split
-will allow to learn on november data and predict on december data, the
-second split to learn december and predict on january etc.
+will allow to learn on november data and predict on december data,
+the second split to learn december and predict on january etc.
 
 We also ask you to respect the pep8 convention: https://pep8.org. This will be
 enforced with `flake8`. You can check that there is no flake8 errors by calling
@@ -56,7 +56,7 @@ from sklearn.utils.validation import check_is_fitted, validate_data
 from sklearn.metrics.pairwise import pairwise_distances
 
 
-class KNearestNeighbors(ClassifierMixin, BaseEstimator):
+class KNearestNeighbors(BaseEstimator, ClassifierMixin):
     """KNearestNeighbors classifier."""
 
     def __init__(self, n_neighbors=1):  # noqa: D107
@@ -163,7 +163,7 @@ class MonthlySplit(BaseCrossValidator):
             The number of splits.
         """
         if self.time_col == 'index':
-            times = pd.to_datetime(X.index)
+            times = pd.Series(X.index)
         else:
             times = pd.to_datetime(X[self.time_col])
         months = times.dt.to_period('M').unique()
@@ -190,7 +190,7 @@ class MonthlySplit(BaseCrossValidator):
             The testing set indices for that split.
         """
         if self.time_col == 'index':
-            times = pd.to_datetime(X.index)
+            times = pd.Series(X.index)
         else:
             times = pd.to_datetime(X[self.time_col])
         months = times.dt.to_period('M').sort_values().unique()
